@@ -9,8 +9,8 @@
 %     tcue is the time in seconds-since-tag-on to start displaying from
 %     R is an optional audit structure to edit or augment
 %     Output:
-%        R is the audit structure made in the session. Use saveaudit
-%        to save this to a file.
+%        R is the audit structure made in the session. Use saveaudit(tag,R)
+%        at the end of each session to save this to a file.
 %
 %     OPERATION
 %     Type or click on the display for the following functions:
@@ -81,6 +81,7 @@
 %                Make sure to have newest audits when making changes
 %
 %     Multiple tag comparison package requires:
+%     dtagaudit_settings.m          % Adjust this to change settings
 %     dtagaudit_synch_int.m
 %     dtagaudit_synch_int_aoa.m
 %     dtagaudit_synch_int_angle.m

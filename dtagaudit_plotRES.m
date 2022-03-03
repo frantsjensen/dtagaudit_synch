@@ -13,11 +13,12 @@ if ~isempty(RES.cue)
    if ~isempty(kk)
       for k=kk'
           cue = RES.cue(k,:);
-          label = strtok(RES.stype{k});
-          if any(contains(lower(label),nonfoc_labels))
+          label = RES.stype{k};
+          label_type = strtok(label);
+          if any(contains(lower(label_type),nonfoc_labels))
               col = [238 045 046]/255 ; % Red
               pos = 0.1;
-          elseif any(contains(lower(label),foc_labels))
+          elseif any(contains(lower(label_type),foc_labels))
               col = [000 139 071]/255 ; % Green      
               pos = 0.8;
           else
