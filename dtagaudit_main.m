@@ -1,16 +1,18 @@
-    function     [RES,AXs,hhh] = dtagaudit_synch(tag,tcue,RES)
+    function     [tcue] = dtagaudit_main(tag,tcue)
 %
-%     R = dtagaudit_synch(tag,tcue,R)
+%     tcue = dtagaudit_main(tag,tcue)
 %
 %     DTAG audit tool compatible with DTAG versions 1 through 3
 %     [Support for simultaneous tags plus multiple smaller hacks]
 %
-%     tag is the tag deployment string e.g., 'sw03_207a'
-%     tcue is the time in seconds-since-tag-on to start displaying from
-%     R is an optional audit structure to edit or augment
+%     Input:
+%     - tag:    deployment ID of tag data 
+%     - tcue:   Start time of audio block to load
 %     Output:
-%        R is the audit structure made in the session. Use saveaudit(tag,R)
-%        at the end of each session to save this to a file.
+%     - tcue:   Start time of last audioblock
+%
+%     Audit files will be saved in configured audit folder;
+%       file name will be given as deploymentIDaud.txt
 %
 %     OPERATION
 %     Type or click on the display for the following functions:
@@ -54,17 +56,6 @@
 %                   -change text to update cue type
 %                   -remove text to delete cue
 %                Press any other button to go back to auditing window
-%
-%     Multiple tag comparison package requires:
-%     dtagaudit_settings.m          % Adjust this to change settings
-%     dtagaudit_synch_int.m
-%     dtagaudit_synch_int_aoa.m
-%     dtagaudit_synch_int_angle.m
-%     dtagaudit_synch_int_revise.m
-%     dtagaudit_plotRES.m
-%     dtagtype.m
-%     dtagtimediff.m
-%     dtagwavread.m
 %
 %     OBS: Change focal and non-focal labels in dtagaudit_plotRES.m to
 %     colorcode focal and non-focal sounds
@@ -110,15 +101,18 @@ if exist(synch_fname)
 end
 
 % Check if audit structure exists
+% Load pre-existing audit information
+RES = loadaudit(tag);
 if nargin<3 || isempty(RES)
-   RES.cue = [] ;
-   RES.stype = [];
+	disp(' WARNING - NO PRE-EXISTING AUDIT FOUND!')
+	RES.cue = [] ;
+	RES.stype = [];
 end
 
 % Check frequency limits
 SPEC_FLIM(2) = min( [SPEC_FLIM(2) AFS_RES/2000]);
 
-%%%%%%%%%%%%%%%%%%% Load prh file %%%%%%%%%%%%%%%%%%%%%
+% Load prh
 k = loadprh(tag,'p','fs') ;           % read p and fs from the sensor file
 if k==0
    fprintf('Unable to find a PRH file - continuing without\n') ;
@@ -217,8 +211,8 @@ while 1
 
 % QUIT AUDITING PROGRAM AND RETURN CUE STRUCTURE
       if button==3 || button=='q'
-         save tagaudit_RECOVER RES
-         disp('Updating R structure after tagaudit. Remember saveaudit(tag,R)')
+         saveaudit(tag,RES);
+         disp(['Audit saved to audit folder: ' gettagpath('AUDIT')])
          return
 
 % INSERT SEQUENCE CUE
@@ -227,7 +221,7 @@ while 1
          cc = sort(current) ;
          RES.cue = [RES.cue;[cc(1) diff(cc)]] ;
          RES.stype{size(RES.cue,1)} = ss ;
-         save tagaudit_RECOVER RES
+         saveaudit(tag,RES);
          dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
 
 % CHECK ANGLE OF ARRIVAL OF SEQUENCE         
@@ -244,7 +238,7 @@ while 1
          ss = input(' Enter comment... ','s') ;
          RES.cue = [RES.cue;[gx 0]] ;
          RES.stype{size(RES.cue,1)} = ss ;
-         save tagaudit_RECOVER RES
+         saveaudit(tag,RES);
          dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
 
 % DELETE OR CHANGE CUE AT CURSOR POSITION
@@ -269,6 +263,7 @@ while 1
                 RES.cue = RES.cue(kkeep,:) ;
                 RES.stype = {RES.stype{kkeep}} ;
             end
+            saveaudit(tag,RES);
             dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
             clear kempty kres
 
@@ -530,7 +525,7 @@ while 1
                               cc = sort([current_synch]) ;
                               RES.cue = [RES.cue;[cc(1) diff(cc)]] ;
                               RES.stype{size(RES.cue,1)} = ss ;
-                              save tagaudit_RECOVER RES
+                              saveaudit(tag,RES);
                               dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]); % Update auditing plot
                               dtagaudit_plotRES(AXS_synch(thistag,2),RES,[tcue tcue+NS]); % Update synch plot
                           end
@@ -629,7 +624,7 @@ while 1
                       if ~isempty(char(ss))
                           RES.cue = [RES.cue;[gx_synch 0]] ;
                           RES.stype{size(RES.cue,1)} = ss ;
-                          save tagaudit_RECOVER RES
+                          saveaudit(tag,RES);
                           dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
                           dtagaudit_plotRES(AXS_synch(thistag,2),RES,[tcue tcue+NS]); % Update synch plot
                       end
@@ -685,6 +680,7 @@ while 1
 
                                 % Update information in single audit and 
                                 % simultaneous audit screen
+                                saveaudit(tag,RES);                                
                                 dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
                                 dtagaudit_plotRES(AXS_synch(thistag,2),RES,[tcue tcue+NS]); % Update synch plot
                             end
