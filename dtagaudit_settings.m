@@ -15,8 +15,8 @@ nonfoc_labels = {'nonfoc','non','nf'};
 
 switch lower(audit_type)
 
-    % Settings for Bottlenose dolphins
-    case 'tt' % Tursiops truncatus
+    % Settings for Bottlenose dolphins and similar delphinids
+    case {'tt','sf'} % Tursiops truncatus, stenella frontalis
 
         CH = 1 ;            % which channel to display if multichannel audio
         NS = 10;            % number of seconds to display
@@ -30,6 +30,7 @@ switch lower(audit_type)
 
         foc_labels = {'sw','swc','w','wM','rs','bp'};
         nonfoc_labels = {'nf'};
+
         
     % Settings for pilot whales
 	case {'pw','gm'} 
@@ -48,11 +49,11 @@ switch lower(audit_type)
         nonfoc_labels = {'nf'};        
         
     % Settings for baleen whales (may need to be differentiated)
-    case {'mn','bp','ea'}
+    case {'mn','bp','ea','er',bb}
         
         CH = 1 ;            % which channel to display if multichannel audio
         NS = 30;            % number of seconds to display
-        AFS_RES = 24e3 ;    % Resample sound to limit data and speed up specgram
+        AFS_RES = 16e3 ;    % Resample sound to limit data and speed up specgram
         SPEC_BL = 1024 ;    % spectrogram (fft) block size
         SPEC_OL = 0.75 ;    % spectrogram overlap
         SPEC_CLIM = [-60,10];% color axis limits in dB for specgram

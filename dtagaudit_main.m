@@ -68,7 +68,7 @@ global CH NS AFS_RES SPEC_BL SPEC_OL SPEC_CLIM SPEC_FLIM ENV_LIM ENV_HP AOA_SCF
 dtagaudit_settings(tag(1:2));
 
 % UNSHARED VARIABLES
-SOUND_FH = 20 ;   % high-pass filter for sound playback - 0 for no filter
+SOUND_FH = 0 ;   % high-pass filter for sound playback - 0 for no filter
 SOUND_DF = 1 ;     % decimation factor for playing sound
 volume = 8 ;       % amplification factor for audio output - often needed to
                    % hear weak signals (if volume>1, loud transients will
@@ -103,7 +103,7 @@ end
 % Check if audit structure exists
 % Load pre-existing audit information
 RES = loadaudit(tag);
-if nargin<3 || isempty(RES)
+if isempty(RES)
 	disp(' WARNING - NO PRE-EXISTING AUDIT FOUND!')
 	RES.cue = [] ;
 	RES.stype = [];
@@ -318,12 +318,12 @@ while 1
                 end
                 
                 % Finally, filter and play sound
-                xf = resample(x_temp,48e3,afs_org);                    
-                [bbbs, aaas] = butter(6,SOUND_FH/(48e3/2),'high') ;
-                if ~isempty(bbbs)
-                    xf = filter(bbbs,aaas,xf) ;
+                xf = resample(x_temp,AFS_RES,afs_org);                    
+                if ~isempty(bs)
+                    xf = filter(bs,as,xf) ;
                 end
-                sound(volume*xf,48e3/SOUND_DF,16) ;
+                xf = xf.*tukeywin(length(xf),0.2./(length(xf)/AFS_RES));
+                sound(volume*xf,AFS_RES/SOUND_DF,16) ;
             else
                 fprintf('Invalid click: Need to mark interval before pressing i to play sound from this interval\n')                
             end
