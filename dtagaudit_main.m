@@ -208,9 +208,12 @@ while 1
    while done == 0
       axes(AXs) ; pause(0) ;
       [gx, gy, button] = ginput(1) ;
+      if isempty(button)
+         % This counts for volume up/down buttons
+      
 
 % QUIT AUDITING PROGRAM AND RETURN CUE STRUCTURE
-      if button==3 || button=='q'
+      elseif button==3 || button=='q'
          saveaudit(tag,RES);
          disp(['Audit saved to audit folder: ' gettagpath('AUDIT')])
          return
