@@ -220,15 +220,25 @@ while 1
 
 % INSERT SEQUENCE CUE
       elseif button=='s'
-         ss = char(inputdlg('Sound type','Label event',[1,60],{''}));
-         if ~isempty(ss)
-             cc = sort(current) ;
-             RES.cue = [RES.cue;[cc(1) diff(cc)]] ;
-             RES.stype{size(RES.cue,1)} = ss;
-             saveaudit(tag,RES);
-             dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
-         end
-     
+         ss = input(' Enter comment... ','s') ;
+         cc = sort(current) ;
+         RES.cue = [RES.cue;[cc(1) diff(cc)]] ;
+         RES.stype{size(RES.cue,1)} = ss ;
+         saveaudit(tag,RES);
+         dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
+
+
+% RUN AUTOMATED DETECTOR ACROSS SECTION
+      elseif button=='s'
+          cc = sort(current) ;
+          DETECTIONS = detectEvents(tag,cc(1),diff(cc));
+
+          ss = input(' Enter comment... ','s') ;
+         
+         RES.cue = [RES.cue;[cc(1) diff(cc)]] ;
+         RES.stype{size(RES.cue,1)} = ss ;
+         saveaudit(tag,RES);
+         dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;         
 
 % CHECK ANGLE OF ARRIVAL OF SEQUENCE         
       elseif button=='a'
@@ -241,13 +251,13 @@ while 1
           
 % INSERT INSTANTANEOUS CUE AT CURSOR POSITION
       elseif button=='l'
-         ss = char(inputdlg('Sound type','Label event',[1,60],{''}));
-         if ~isempty(ss)
-            RES.cue = [RES.cue;[gx 0]] ;
-            RES.stype{size(RES.cue,1)} = ss ;
-            saveaudit(tag,RES);
-            dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
-         end
+         ss = input(' Enter comment... ','s') ;
+         ss =inputdlg('Sound type','Edit/remove cues',[1,40],{''});
+         if ~isempty(ss{1})
+         RES.cue = [RES.cue;[gx 0]] ;
+         RES.stype{size(RES.cue,1)} = ss ;
+         saveaudit(tag,RES);
+         dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
 
 % DELETE OR CHANGE CUE AT CURSOR POSITION
       elseif button=='x'
