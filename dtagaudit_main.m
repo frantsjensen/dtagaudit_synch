@@ -40,6 +40,7 @@
 %       through the computer speaker/headphone jack.
 %     - type 'q' or press the right hand mouse button to finish auditing.
 %     - type 'a' to report the angle of arrival of the selected segment
+%     - type 'D' to run detector across segment and label events in bulk
 %
 %     Multiple tag comparison package (separate files required):
 %     - type 'o' to set up multiple tag comparison.
@@ -229,7 +230,24 @@ while 1
              dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
          end
      
+% RUN AUTOMATED DETECTOR ACROSS SECTION
+      elseif button=='D'
+          % Sort time points
+          cc = sort(current) ;
 
+          % Find detections (start time + duration)
+          DETECTIONS = detectEvents(tag,cc(1),diff(cc));
+          
+          ss = char(inputdlg('Sound type','Label event',[1,60],{''}));
+          if ~isempty(ss)
+              for j=1:size(DETECTIONS,1)
+                  RES.cue = [RES.cue;DETECTIONS(j,:)] ;
+                  RES.stype{size(RES.cue,1)} = ss;
+              end
+              saveaudit(tag,RES);
+              dtagaudit_plotRES(AXc,RES,[tcue tcue+NS]) ;
+          end
+          
 % CHECK ANGLE OF ARRIVAL OF SEQUENCE         
       elseif button=='a'
           try
