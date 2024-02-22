@@ -33,12 +33,11 @@ env_smooth = 20*log10(conv(env,ones(NN,1)/NN,'same'));
 env_dist = prctile(env_smooth,[2.5 10 50 90 97.5]);
 
 % Take mean of 2.5th percentile and 97.5th percentile as starting threshold
-thr1 = mean(env_dist([1,5]);
+thr1 = mean(env_dist([1,4]));
 
 
 % find events exceeding threshold
-env_smooth>thr1;
-k=find(env>5);
+k=find(env_smooth>thr1);
 
 if ~isempty(k)
     detect_samples = [k(1) k(end)]; % Default is one long detection
@@ -74,7 +73,10 @@ cues(find(cues(:,2)<mindur),:) = [];
 figure(90), clf, hold on
 plot([1:length(env_smooth)]/AFS_RES,env_smooth,'k')
 for j=1:size(cues,1)
-    plot(detect_samples(j,:)/AFS_RES),max(env_smooth(detect_samples(j,1):detect_samples(j,2)),'r','linewidth',3)
+    x = detect_samples(j,:)/AFS_RES;
+    y = max(env_smooth(detect_samples(j,1):detect_samples(j,2)));
+    plot(x,y,'r','linewidth',3)
+
 end
 
 return
