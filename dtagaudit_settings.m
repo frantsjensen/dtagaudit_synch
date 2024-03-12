@@ -49,7 +49,7 @@ switch lower(audit_type)
         nonfoc_labels = {'nf'};        
         
     % Settings for baleen whales (may need to be differentiated)
-    case {'mn','bp','ea','er',bb}
+    case {'mn','bp','ea','er','bb'}
         
         CH = 1 ;            % which channel to display if multichannel audio
         NS = 30;            % number of seconds to display
